@@ -11,6 +11,9 @@ Original changes by [@mpasko](https://github.com/mpasko/angular-datepicker).
  * Updated versions to external libraries and development tools
  * Tab index on all controlls set to -1 and appropriate listeners were added, so tab key pressed by user causes datepicker modal window to close
  * Minified versions of CSS and JS files were regenerated
+ * Picker height is independent of width, Picker width is bound up to reasonable value.
+ * Startup date is initialized with existing date on input control
+ * Changed colors to mimic bootstrap
 
 
 [![Join the chat at https://gitter.im/720kb/angular-datepicker](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/720kb/angular-datepicker?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)

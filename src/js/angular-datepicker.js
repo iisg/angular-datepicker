@@ -5,7 +5,7 @@
   'use strict';
 
   angular.module('720kb.datepicker', [])
-		.directive('datepicker', ['$window', '$compile', '$locale', '$filter', '$interpolate', function manageDirective($window, $compile, $locale, $filter, $interpolate) {
+		.directive('datepicker', ['$window', '$compile', '$locale', '$filter', '$interpolate', '$timeout', function manageDirective($window, $compile, $locale, $filter, $interpolate, $timeout) {
 
     var A_DAY_IN_MILLISECONDS = 86400000;
 
@@ -101,8 +101,7 @@
         htmlTemplate = htmlTemplate.replace(/{{/g, $interpolate.startSymbol())
             .replace(/}}/g, $interpolate.endSymbol());
 
-        $scope.$watch('dateSet', function dateSetWatcher(value) {
-
+        var dateSetWatcher = function dateSetWatcher(value) {
           if (value) {
 
             date = new Date(value);
@@ -114,7 +113,8 @@
 						$scope.setDaysInMonth($scope.monthNumber, $scope.year);
             $scope.setInputValue();
           }
-        });
+        };
+        $scope.$watch('dateSet', dateSetWatcher);
 
         $scope.$watch('dateMinLimit', function dateMinLimitWatcher(value) {
           if (value) {
@@ -577,6 +577,13 @@
 
         $scope.paginateYears($scope.year);
         $scope.setDaysInMonth($scope.monthNumber, $scope.year);
+        $timeout(function afterAngularTimeout() {
+          var initial = thisInput.val();
+          var momentObjct = moment(initial, dateFormat.toUpperCase());
+          if (initial && initial !== '' && momentObjct.isValid()) {
+            dateSetWatcher(momentObjct.toDate());
+          }
+        });
       }
     };
   }]);
