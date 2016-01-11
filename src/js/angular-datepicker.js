@@ -5,7 +5,21 @@
   'use strict';
 
   angular.module('720kb.datepicker', [])
-		.directive('datepicker', ['$window', '$compile', '$locale', '$filter', '$interpolate', '$timeout', function manageDirective($window, $compile, $locale, $filter, $interpolate, $timeout) {
+
+      .provider('datepickerConfig', function(){
+
+        var datePickerConfig = {
+          'defaultDateFormat': 'dd.MM.yyyy',
+          '$get': function() {
+            return datePickerConfig;
+          }
+        };
+
+        return datePickerConfig;
+
+      })
+
+		.directive('datepicker', ['datepickerConfig', '$window', '$compile', '$locale', '$filter', '$interpolate', '$timeout', function manageDirective(datepickerConfig, $window, $compile, $locale, $filter, $interpolate, $timeout) {
 
     var A_DAY_IN_MILLISECONDS = 86400000;
 
@@ -38,7 +52,7 @@
           , defaultNextButton = '<b class="datepicker-default-button">&rsaquo;</b>'
           , prevButton = attr.buttonPrev || defaultPrevButton
           , nextButton = attr.buttonNext || defaultNextButton
-          , dateFormat = attr.dateFormat
+          , dateFormat = attr.dateFormat || datepickerConfig.defaultDateFormat
           , dateMinLimit
           , dateMaxLimit
           , date = new Date()
@@ -331,7 +345,7 @@
 
             var modelDate = new Date($scope.year + '/' + $scope.monthNumber + '/' + $scope.day);
 
-            if (attr.dateFormat) {
+            if (dateFormat) {
 
               thisInput.val($filter('date')(modelDate, dateFormat));
             } else {

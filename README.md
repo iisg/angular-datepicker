@@ -14,6 +14,7 @@ Original changes by [@mpasko](https://github.com/mpasko/angular-datepicker).
  * Picker height is independent of width, Picker width is bound up to reasonable value.
  * Startup date is initialized with existing date on input control
  * Changed colors to mimic bootstrap
+ * Allow to set default date format via `datepickerConfigProvider.defaultDateFormat`
 
 
 [![Join the chat at https://gitter.im/720kb/angular-datepicker](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/720kb/angular-datepicker?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
@@ -129,7 +130,7 @@ You can set the titles for the month and year selectors with the **date-year-tit
 <datepicker date-year-title="selected title">
     <input ng-model="date"/>
 </datepicker>
-  
+
 ####Custom buttons
 You can customize the calendar navigation buttons content, let's make an example while using [FontAwesome](http://fontawesome.io)
 
@@ -149,7 +150,7 @@ You can also set the titles for the left and right arrows with **button-next-tit
 </datepicker>
 
 ####Input as grandchild
-Sometimes you cannot put date input as a first child of datepicker. In this case you may use `selector=""` to point to the CSS class of the input. Below example with using Twitter Bootstrap and FontAwesome 
+Sometimes you cannot put date input as a first child of datepicker. In this case you may use `selector=""` to point to the CSS class of the input. Below example with using Twitter Bootstrap and FontAwesome
 
 ```html
 <datepicker date-format="yyyy-MM-dd" selector="form-control">
