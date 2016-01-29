@@ -6,11 +6,11 @@
 
   angular.module('720kb.datepicker', [])
 
-      .provider('datepickerConfig', function(){
+      .provider('datepickerConfig', function datepickerConfigProvider(){
 
         var datePickerConfig = {
           'defaultDateFormat': 'dd.MM.yyyy',
-          '$get': function() {
+          '$get': function datepickerConfigProviderGetter() {
             return datePickerConfig;
           }
         };
@@ -44,6 +44,7 @@
         $scope.dateYearTitle = $scope.dateYearTitle || 'Select year';
         $scope.buttonNextTitle = $scope.buttonNextTitle || 'Next';
         $scope.buttonPrevTitle = $scope.buttonPrevTitle || 'Prev';
+        $scope.lastSelectedDate = {};
 
         var selector = attr.selector
           , thisInput = angular.element(selector ? element[0].querySelector('.' + selector) : element[0].children[0])
@@ -91,7 +92,7 @@
           //years pagination header
           '<div class="_720kb-datepicker-calendar-header" ng-show="showYearsPagination">' +
           '<div class="_720kb-datepicker-calendar-years-pagination">' +
-          '<a ng-class="{\'_720kb-datepicker-active\': y === year, \'_720kb-datepicker-disabled\': !isSelectableMaxYear(y) || !isSelectableMinYear(y)}" href="javascript:void(0)" ng-click="setNewYear(y)" ng-repeat="y in paginationYears" tabindex=-1>{{y}}</a>' +
+          '<a ng-class="{\'_720kb-datepicker-active\': y === year, \'_720kb-datepicker-last\': y === lastSelectedDate.year, \'_720kb-datepicker-disabled\': !isSelectableMaxYear(y) || !isSelectableMinYear(y)}" href="javascript:void(0)" ng-click="setNewYear(y)" ng-repeat="y in paginationYears" tabindex=-1>{{y}}</a>' +
           '</div>' +
           '<div class="_720kb-datepicker-calendar-years-pagination-pages">' +
           '<a href="javascript:void(0)" ng-click="paginateYears(paginationYears[0])" ng-class="{\'_720kb-datepicker-item-hidden\': paginationYearsPrevDisabled}" tabindex=-1>' + prevButton + '</a>' +
@@ -243,6 +244,18 @@
           $scope.year = Number($filter('date')(new Date(dateMaxLimit), 'yyyy'));
         };
 
+        var hideSelectedDay = function hideSelectedDay() {
+          //deactivate selected day
+          $scope.day = undefined;
+          if ($scope.lastSelectedDate) {
+            var monthsMatch = $scope.monthNumber === $scope.lastSelectedDate.monthNumber;
+            var yearsMatch = $scope.year === $scope.lastSelectedDate.year;
+            if (monthsMatch && yearsMatch) {
+              $scope.day = $scope.lastSelectedDate.day;
+            }
+          }
+        };
+
         $scope.nextMonth = function manageNextMonth() {
 
           if ($scope.monthNumber === 12) {
@@ -266,8 +279,7 @@
               $scope.resetToMaxDate();
             }
           }
-          //deactivate selected day
-          $scope.day = undefined;
+          hideSelectedDay();
         };
 
         $scope.selectedMonthHandle = function manageSelectedMonthHandle (selectedMonth) {
@@ -300,15 +312,10 @@
               $scope.resetToMinDate();
             }
           }
-          //deactivate selected day
-          $scope.day = undefined;
+          hideSelectedDay();
         };
 
         $scope.setNewYear = function setNewYear (year) {
-
-          //deactivate selected day
-          $scope.day = undefined;
-
           if (dateMaxLimit && $scope.year < Number(year)) {
 
             if (!$scope.isSelectableMaxYear(year)) {
@@ -326,6 +333,7 @@
           $scope.year = Number(year);
           $scope.setDaysInMonth($scope.monthNumber, $scope.year);
           $scope.paginateYears(year);
+          hideSelectedDay();
         };
 
         $scope.nextYear = function manageNextYear() {
@@ -481,6 +489,7 @@
           $scope.day = Number(day);
           $scope.setInputValue();
           $scope.hideCalendar();
+          $scope.updateLastSelected();
         };
 
         $scope.paginateYears = function paginateYears (startingYear) {
@@ -578,25 +587,38 @@
           return true;
         };
 
-        //check always if given range of dates is ok
-        if (dateMinLimit && !$scope.isSelectableMinYear($scope.year)) {
+        $scope.updateLastSelected = function updateLastSelected() {
+          $scope.lastSelectedDate.day = $scope.day;
+          $scope.lastSelectedDate.monthNumber = $scope.monthNumber;
+          $scope.lastSelectedDate.year = $scope.year;
+        };
 
-          $scope.resetToMinDate();
-        }
+        var setDefaultValues = function setDefaultValues() {
+          //check always if given range of dates is ok
+          if (dateMinLimit && !$scope.isSelectableMinYear($scope.year)) {
 
-        if (dateMaxLimit && !$scope.isSelectableMaxYear($scope.year)) {
+            $scope.resetToMinDate();
+          }
 
-          $scope.resetToMaxDate();
-        }
+          if (dateMaxLimit && !$scope.isSelectableMaxYear($scope.year)) {
 
-        $scope.paginateYears($scope.year);
-        $scope.setDaysInMonth($scope.monthNumber, $scope.year);
+            $scope.resetToMaxDate();
+          }
+
+          $scope.paginateYears($scope.year);
+
+          $scope.setDaysInMonth($scope.monthNumber, $scope.year);
+
+          $scope.updateLastSelected();
+        };
+
         $timeout(function afterAngularTimeout() {
           var initial = thisInput.val();
           var momentObjct = moment(initial, dateFormat.toUpperCase());
           if (initial && initial !== '' && momentObjct.isValid()) {
             dateSetWatcher(momentObjct.toDate());
           }
+          setDefaultValues();
         });
       }
     };

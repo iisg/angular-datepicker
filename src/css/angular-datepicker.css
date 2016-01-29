@@ -147,6 +147,11 @@ datepicker, .datepicker, [datepicker],
 ._720kb-datepicker-calendar-years-pagination a._720kb-datepicker-active {
   color:rgba(0, 0, 0, 0.9);
   font-weight: 500;
+  background: rgba(255, 255, 255, 0.85);
+}
+._720kb-datepicker-calendar-years-pagination a._720kb-datepicker-last {
+  color:rgba(63, 63, 0, 0.9);
+  font-weight: 500;
   background: rgba(255, 255, 255, 0.45);
 }
 ._720kb-datepicker-calendar-years-pagination-pages a,._720kb-datepicker-calendar-years-pagination-pages a:hover{
